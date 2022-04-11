@@ -13,6 +13,10 @@ namespace Diff.Application.Commands
     public class GetDifferencesCommand : IRequest<ResultVm>
     {
         public int Id { get; init; }
+        public override string ToString()
+        {
+            return $"Id: {Id}";
+        }
     }
 
     public class GetDifferencesCommandHandler : IRequestHandler<GetDifferencesCommand, ResultVm>
@@ -22,21 +26,22 @@ namespace Diff.Application.Commands
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
 
-        public GetDifferencesCommandHandler(IInputRepository repository, IDifferencesFinder finder, IMapper mapper, ILogger<GetDifferencesCommandHandler> logger)
+        public GetDifferencesCommandHandler(IInputRepository repository, IDifferencesFinder finder, IMapper mapper,
+            ILogger<GetDifferencesCommandHandler> logger)
         {
             _repository = repository;
             _diffFinder = finder;
             _mapper = mapper;
             _logger = logger;
         }
-        
+
         public Task<ResultVm> Handle(GetDifferencesCommand request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Get difference for id = {0}", request.Id);
             try
             {
-                var pairs = _repository.GetPairs(request.Id).Result; 
-                return _diffFinder.GetDifferences(pairs[0], pairs[1]); 
+                _logger.LogInformation($"The get difference method called with the id = {request}");
+                var pairs = _repository.GetPairs(request.Id).Result;
+                return _diffFinder.GetDifferences(pairs[0], pairs[1]);
             }
             catch (Exception e)
             {
@@ -46,7 +51,6 @@ namespace Diff.Application.Commands
                     Id = request.Id,
                     ResultMessage = e.Message
                 };
-                
                 return Task.FromResult(res);
             }
         }

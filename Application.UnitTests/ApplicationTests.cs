@@ -8,7 +8,6 @@ using Diff.Infrastructure.Data;
 using Diff.Infrastructure.Files;
 using Diff.Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
 namespace Application.UnitTests
@@ -37,8 +36,8 @@ namespace Application.UnitTests
             _inputContext = new InputContext<InputModel>();
             
             _inputRepository = new InputRepository(_inputContext, Mock.Of<ILogger<InputRepository>>());
-            _addBase64InputCommandHandler = new AddBase64InputCommandHandler(_inputRepository, _mapper);
-            _differencesFinder = new DifferencesFinder();
+            _addBase64InputCommandHandler = new AddBase64InputCommandHandler(_inputRepository, _mapper, Mock.Of<ILogger<AddBase64InputCommandHandler>>());
+            _differencesFinder = new DifferencesFinder(Mock.Of<ILogger<DifferencesFinder>>());
             
             _getDifferencesCommandHandler =
                 new GetDifferencesCommandHandler(_inputRepository, _differencesFinder, _mapper, Mock.Of<ILogger<GetDifferencesCommandHandler>>());
@@ -51,7 +50,7 @@ namespace Application.UnitTests
             {
                 Id = 123,
                 Side = "left",
-                Base64Str = "YXpGd2p2RHVXcA=="
+                Data = "YXpGd2p2RHVXcA=="
             };
             var resp = _addBase64InputCommandHandler.Handle(command, CancellationToken.None);
             Assert.AreEqual(true, resp.Result);
@@ -64,7 +63,7 @@ namespace Application.UnitTests
             {
                 Id = 123,
                 Side = "right",
-                Base64Str = "ZVdmZmdmWVlHTg=="
+                Data = "ZVdmZmdmWVlHTg=="
             };
             var resp = _addBase64InputCommandHandler.Handle(command, CancellationToken.None);
             Assert.AreEqual(true, resp.Result);
@@ -86,7 +85,7 @@ namespace Application.UnitTests
             {
                 Id = 123,
                 Side = "left",
-                Base64Str = "YXpGd2p2RHVXcA=="
+                Data = "YXpGd2p2RHVXcA=="
             };
             var resp = _addBase64InputCommandHandler.Handle(command, CancellationToken.None);
             Assert.AreEqual(true, resp.Result);
@@ -95,7 +94,7 @@ namespace Application.UnitTests
             {
                 Id = 124,
                 Side = "right",
-                Base64Str = "ZVdmZmdmWVlHTg=="
+                Data = "ZVdmZmdmWVlHTg=="
             };
             var resp1 = _addBase64InputCommandHandler.Handle(command1, CancellationToken.None);
             Assert.AreEqual(true, resp.Result);
