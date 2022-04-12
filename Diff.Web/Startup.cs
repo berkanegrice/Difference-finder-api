@@ -1,18 +1,21 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Diff.Application;
-using Diff.Application.Interfaces;
-using Diff.Domain.Entities;
-using Diff.Domain.Repositories;
-using Diff.Domain.Repositories.Base;
-using Diff.Infrastructure.Data;
-using Diff.Infrastructure.Files;
-using Diff.Infrastructure.Repositories;
-using Diff.Infrastructure.Repositories.Base;
+using Diff.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
+#pragma warning disable CS1591
 
 namespace Diff.Web
 {
@@ -29,27 +32,61 @@ namespace Diff.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplication();
+            services.AddInfrastructure(Configuration);
             services.AddControllers();
-            services.AddSingleton<InputContext<InputModel>>(); // move to another project.
 
-            services.AddSwaggerGen(c =>
+            #region  API versioning
+            
+            services.AddApiVersioning(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Diff.Web", Version = "v1" });
+                options.ReportApiVersions = true;
+                options.DefaultApiVersion = new ApiVersion(1, 0);
             });
 
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>)); // move to another project.
-            services.AddTransient<IInputRepository, InputRepository>(); // move to another project.
-            services.AddTransient<IDifferencesFinder, DifferencesFinder>(); // move to another project.
+            services.AddVersionedApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
+            
+            #endregion
+
+            #region For Swagger
+
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlFilePath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigureOptions>();
+            services.AddSwaggerGen(options =>
+            {
+                options.IncludeXmlComments(xmlFilePath);
+            });
+
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Diff.Web v1"));
+                app.UseSwagger(options =>
+                {
+                    options.PreSerializeFilters.Add((swagger, req) =>
+                    {
+                        swagger.Servers = new List<OpenApiServer>() { new OpenApiServer() { Url = $"https://{req.Host}" } };
+                    });
+                });
+                app.UseSwaggerUI(options =>
+                {
+                    foreach (var desc in apiVersionDescriptionProvider.ApiVersionDescriptions)
+                    {
+                        options.SwaggerEndpoint($"../swagger/{desc.GroupName}/swagger.json", desc.ApiVersion.ToString());
+                        options.DefaultModelsExpandDepth(-1);
+                        options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+                    }
+                });
             }
 
             app.UseHttpsRedirection();

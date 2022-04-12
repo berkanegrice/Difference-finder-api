@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Diff.Application.Interfaces;
+using Diff.Application.Interfaces.Repositories;
 using Diff.Application.Models;
-using Diff.Domain.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

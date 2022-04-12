@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Diff.Application.Interfaces.Repositories.Base;
 using Diff.Domain.Entities;
-using Diff.Domain.Repositories.Base;
 
-namespace Diff.Domain.Repositories
+namespace Diff.Application.Interfaces.Repositories
 {
     public interface IInputRepository : IRepository<InputModel>
     {

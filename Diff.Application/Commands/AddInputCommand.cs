@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Diff.Domain.Repositories;
+using Diff.Application.Interfaces.Repositories;
 using Diff.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
