@@ -1,7 +1,7 @@
 # Difference-finder-api
 Difference finder api
 
-This API calculates the differences in two given base64-econded strings.
+This API calculates the differences in two base64-econded strings.
 
 ## Behaviours of API
 
@@ -13,7 +13,7 @@ The API enables to three endpoints to accomplish this task.
 
 ### Constraints
   - The input **Id** is required and must be integer.
-  - The input **Str** is required, not nullable and should be encoded with base64.
+  - The input **Data** is required, not nullable and should be encoded with base64.
 
 ### Output structure
 
@@ -37,19 +37,26 @@ The results produced will be given in the output structure below.
 ### Usage
 - Inserts to left
 ```console
-    curl -X POST <host>/diff/<Id>/left -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"data\":\"<Str>\"}"
+    curl -X POST <host>/v1/diff/<Id>/left -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"data\":\"<Str>\"}"
 ```
 - Inserts to right
 ```console
-    curl -X POST <host>/diff/<Id>/left -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"data\":\"<Str>\"}"
+    curl -X POST <host>/v1/diff/<Id>/left -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"data\":\"<Str>\"}"
 ```
 - To get results
 ```console
-    curl -X GET "<host>/diff/<Id>" -H  "accept: text/plain"
+    curl -X GET "<host>/v1/diff/<Id>" -H  "accept: text/plain"
 ```
 
-## Some Improvment Suggestions
-- A database application can be implemented to ensure data persistence. To keep the project simple, the variables were stored in the ```List```.
+## Implementation Detail
+Beyond the mandatory exception handling. Some methods have been implemented to handle several possible error scenarios. 
+Those are described in the following;
+ - Additional base64 validation check have been implemented to determine given input is encoded with base64.
+ - It checks that both pairs were inserted before trying to calculate their difference.
+
+
+## Some Improvement Suggestions
+- A database application can be implemented to ensure data persistence. To keep this project simple, the variables were stored in the ```List```.
 
 - In case of adding the entry item with the existing Id, the new incoming entry in the existing solution overwrites the existing one.
 User confirmation can be added to avoid any faulty user action.
