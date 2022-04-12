@@ -3,17 +3,21 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Diff.Application.Commands;
 using Diff.Application.Models;
-using Diff.Infrastructure.Files;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
+#pragma warning disable CS1591
 
 
 namespace Diff.Web.Controllers
 {
-    [Route("diff/{id:int}")]
+    /// <summary>
+    /// this controller summary command.
+    /// </summary>
     [ApiController]
+    [Route("/v{version:apiVersion}/diff/{id:int}")]
+    [ApiVersion("1.0")]
+    
     public class DifferenceController : ControllerBase
     {
         private readonly IMediator _mediator;

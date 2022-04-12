@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Diff.Domain.Repositories.Base;
+using Diff.Application.Interfaces.Repositories.Base;
 using Diff.Infrastructure.Data;
 
 namespace Diff.Infrastructure.Repositories.Base
