@@ -7,6 +7,7 @@ using Diff.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
+
 namespace Diff.Application.Commands
 {
     public class AddInputCommand : IRequest<bool>
