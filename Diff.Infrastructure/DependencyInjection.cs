@@ -6,8 +6,8 @@ using Diff.Infrastructure.Data;
 using Diff.Infrastructure.Files;
 using Diff.Infrastructure.Repositories;
 using Diff.Infrastructure.Repositories.Base;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace Diff.Infrastructure
 {
