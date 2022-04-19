@@ -1,11 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
 
         <IsPackable>false</IsPackable>
 
         <RootNamespace>Application.UnitTests</RootNamespace>
+
+        <TargetFrameworks>net6.0;net6.0-windows</TargetFrameworks>
+
+        <LangVersion>10</LangVersion>
+
+        <Nullable>disable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
